@@ -1,7 +1,7 @@
 dim g_Tasks
-
+ 
 ' Work Scopes
-
+ 
 const SCOPE_SEALED = 1
 const SCOPE_FLOODED = 2
 const SCOPE_MONTHLY = 4
@@ -13,7 +13,7 @@ const SCOPE_STARTUP = 128
 const SCOPE_INTEGRITY = 256
 const SCOPE_TRO_TICK = 512
 const SCOPE_ALL = 1020 ' All scopes except flooded/sealed
-
+ 
 '----------------------------------------------------------------------
 ' Classes that handle hiding showing different fields in the form based
 ' on 'work scope'.
@@ -34,7 +34,7 @@ class RowTask
     public property let Tag(TagVal)
         m_Tag = TagVal
     end property
-
+ 
     public property let Label(LabelVal)
         m_Label = LabelVal
     end property
@@ -42,18 +42,18 @@ class RowTask
     public property let Scope(ScopeVal)
         m_Scope = ScopeVal
     end property
-
+ 
     public property get Scope()
         Scope = m_Scope
     end property
-
+ 
         
     '------ Initialize ------
     private sub class_Initialize
         m_bShow = false
         m_bInit = false
     end sub
-
+ 
     '------ Methods ------
     public sub Display(bShow)
         m_bInit = true
@@ -62,7 +62,7 @@ class RowTask
         if bShow then
             NumRows = GetVar("InspectionTableNumRows")            
             NumRows = NumRows + 1
-
+ 
             call SetNdxVar("InspectionDesc", NumRows, m_Label)
             call SetNdxVar("InspectionTag", NumRows, m_Tag)
             'call SetNdxVar("InspectionValue", NumRows, "")
@@ -72,10 +72,10 @@ class RowTask
         end if
         
     end sub
-
-
+ 
+ 
 end class
-
+ 
 class FieldAndLabelTask
     private m_Tags
     private m_bShow
@@ -118,12 +118,12 @@ class FieldAndLabelTask
         m_bShow = false
         m_bInit = false
     end sub
-
+ 
     '------ Methods ------
     public sub Display(bShow)
         m_bInit = true
         m_bShow = bShow
-
+ 
         if bShow and EvalCondition() then
             call RunTagCmd(m_Tags, "Visible 1")
         else
@@ -131,7 +131,7 @@ class FieldAndLabelTask
         end if
         
     end sub
-
+ 
     private function EvalCondition()
         bCheck = true
         call aLog("m_CheckVar=" & m_CheckVar)
@@ -149,9 +149,9 @@ class FieldAndLabelTask
         EvalCondition = bCheck
         
     end function
-
+ 
 end class
-
+ 
 class TableColumnTask
     private m_Tag
     private m_Labels
@@ -167,7 +167,7 @@ class TableColumnTask
     public property let Tag(TagVal)
         m_Tag = TagVal
     end property
-
+ 
     public property let Label(LabelVal)
         m_Label = LabelVal
     end property
@@ -189,18 +189,18 @@ class TableColumnTask
         m_bShow = false
         m_bInit = false
     end sub
-
+ 
     '------ Methods ------
     public sub Display(bShow)
         m_bInit = true
         m_bShow = bShow
     end sub
-
+ 
 end class
-
-
+ 
+ 
 class TaskCollection
-
+ 
     private m_Tasks()
     private m_NumTasks
     
@@ -208,7 +208,7 @@ class TaskCollection
         m_NumTasks = 0
         Redim m_Tasks(10)       
     end sub
-
+ 
     public sub AddRowTask(Tag, Label, ScopeMask, CheckVar, CheckCondition)
         Dim Task
         
@@ -216,20 +216,20 @@ class TaskCollection
         Task.Tag = Tag
         Task.Label = Label
         Task.Scope = ScopeMask
-
+ 
         call me.AddTask(Task)             
     end sub
-
+ 
     public sub AddFieldAndLabelTask(Tags, ScopeMask, CheckVar, CheckCondition)
         Set Task = new FieldAndLabelTask
         Task.Tags = Tags
         Task.Scope = ScopeMask
         Task.CheckVar = CheckVar
         Task.CheckCondition = CheckCondition
-
+ 
         call me.AddTask(Task)   
     end sub
-
+ 
     public sub Process(Scope, BatteryType)
     
         call SetVar("InspectionTableNumRows", 0)
@@ -253,7 +253,7 @@ class TaskCollection
         NumRows = GetVar("InspectionTableNumRows")
         call SetNumRows("__10770_Inspections", NumRows)
     end sub
-
+ 
     public sub AddTask(Task)
            
         if m_NumTasks > UBound(m_Tasks) then
@@ -266,7 +266,7 @@ class TaskCollection
     end sub
     
 end class
-
+ 
 sub InitWorkScopes()
     
     if IsEmpty(g_Tasks) then
@@ -277,17 +277,17 @@ sub InitWorkScopes()
         '
         call g_Tasks.AddRowTask("InspectAppearance", "INSPECT THE APPEARANCE AND CLEANLINESS OF THE BATTERY AND BATTERY ROOM:", _
                             SCOPE_ALL - SCOPE_INTEGRITY - SCOPE_CERT + SCOPE_FLOODED + SCOPE_SEALED, "", "")
-
+ 
         call g_Tasks.AddRowTask("InspectTerminals", "INSPECT TERMINALS FOR ADEQUATE CORROSION INHIBITOR, HARDWARE STACK AND CONNECTION STRESS:",_
                             SCOPE_STARTUP + SCOPE_FLOODED + SCOPE_SEALED, "", "")
-
+ 
         ' Rack integrity is displayed in the section.
         'call g_Tasks.AddRowTask("BatteryRackIntegrity", "VERIFY INTEGRITY OF THE BATTERY RACK:",_
         '                    SCOPE_QUARTERLY + SCOPE_SEMI_ANNUAL + SCOPE_ANNUAL + SCOPE_CERT + SCOPE_STARTUP + SCOPE_FLOODED + SCOPE_SEALED)
-
+ 
         call g_Tasks.AddRowTask("VerifyPolarity", "VERIFY STRING POLARITY:",_
                            SCOPE_STARTUP + SCOPE_FLOODED + SCOPE_SEALED, "", "")
-
+ 
         call g_Tasks.AddRowTask("VerifyNoGroundFault", "VERIFY NO GROUND FAULT EXISTS:",_
                            SCOPE_ALL - SCOPE_CERT + SCOPE_FLOODED + SCOPE_SEALED, "", "")
         call g_Tasks.AddRowTask("InspectJars", "VISUALLY INSPECT JARS AND COVERS FOR CRACKS AND LEAKAGE:",_
@@ -295,10 +295,10 @@ sub InitWorkScopes()
         
         call g_Tasks.AddRowTask("InspectElectrolyte", "INSPECT ELECTROLYTE LEVELS:",_
                            SCOPE_MONTHLY + SCOPE_TRO_TICK + SCOPE_QUARTERLY + SCOPE_SEMI_ANNUAL + SCOPE_ANNUAL + SCOPE_STARTUP + SCOPE_FLOODED, "", "")
-
+ 
         call g_Tasks.AddRowTask("InspectCorrosion", "VISUALLY INSPECT FOR EVIDENCE OF CORROSION:",_
                            SCOPE_ALL - SCOPE_CERT - SCOPE_INTEGRITY + SCOPE_FLOODED + SCOPE_SEALED, "", "")
-
+ 
         '
         ' Tasks that appear in other sections of the form (ususally label, value, unit label)            
         '
@@ -322,21 +322,21 @@ sub InitWorkScopes()
         ' Battery Rack Integrity
         call g_Tasks.AddFieldAndLabelTask("FixtureConditionLabel2,FixtureCondition,FixtureConditionDD", _
              SCOPE_ALL + SCOPE_FLOODED + SCOPE_SEALED, "", "")
-
+ 
         ' All posts torqued
         call g_Tasks.AddFieldAndLabelTask("AllPostsTorquedLabel,AllPostsTorqued,AllPostsTorquedDD", _
              SCOPE_ANNUAL + SCOPE_CERT + SCOPE_STARTUP + SCOPE_FLOODED + SCOPE_SEALED, "bTorque", " <> 0")
-
+ 
         call g_Tasks.AddFieldAndLabelTask("TorqueValueLabel,TorqueValue,TorqueValueUnitLabel", _
              SCOPE_CERT + SCOPE_STARTUP + SCOPE_ANNUAL + SCOPE_FLOODED + SCOPE_SEALED, "", "")
-
+ 
         call g_Tasks.AddFieldAndLabelTask("NoJarTorqueLbl,NoJarTorque", _
              SCOPE_ANNUAL + SCOPE_FLOODED + SCOPE_SEALED, "", "")
-
+ 
         'call g_Tasks.AddFieldAndLabelTask("EqualizeChargeVoltageLbl,EqualizeChargeVoltage,EqualizeChargeVoltageUnit,EqualizeChargeDuration," &_
         '                                  "EqualizeChargeDurationLbl,EqualizeSystemVoltageLbl,EqualizeSystemVoltage,EqualizeSystemVoltageUnitLbl", _
         '                                  SCOPE_STARTUP + SCOPE_FLOODED + SCOPE_SEALED, "", "")
-
+ 
         call g_Tasks.AddFieldAndLabelTask("BatteryRackTorqueLbl,BatteryRackTorque,BatteryRackTorqueUnitLbl", _
              SCOPE_CERT + SCOPE_FLOODED + SCOPE_SEALED, "", "")
              
@@ -353,14 +353,14 @@ sub InitWorkScopes()
     end if
     
 end sub
-
+ 
 sub GetWorkScope(ByRef Scope, ByRef BatteryType)
     
     ScopeStr = GetVar("ScopeOfWork")
-
+ 
     call aLog("ScopeStr= " & ScopeStr)
     
-
+ 
     If ScopeStr = "Monthly" Then
         Scope = SCOPE_MONTHLY
     ElseIf ScopeStr = "Quarterly" Then 
@@ -380,15 +380,15 @@ sub GetWorkScope(ByRef Scope, ByRef BatteryType)
     ElseIf ScopeStr = "Trouble Ticket" Then
         Scope = SCOPE_TRO_TICK
     End If
-
+ 
     call aLog("Scope= " & Scope)
-
-
+ 
+ 
     If Scope = SCOPE_INTEGRITY Then
         BatteryType = 0
     Else
         BatteryTypeStr = GetVar("BatteryType")
-
+ 
         If IsEmpty(BatteryTypeStr) then 
             BatteryTypeStr = ""
         end if
@@ -402,12 +402,12 @@ sub GetWorkScope(ByRef Scope, ByRef BatteryType)
             call aLog("BatteryType = FLOODED")
         End If
     End If
-
+ 
 end sub
-
+ 
 sub SelectCellDataSubformAndCharts(WorkScope, BatteryType)
     
-
+ 
     Dim CellDataSubform
     Dim PromptForVoltageField 
     Dim VoltageTag 
@@ -477,7 +477,7 @@ sub SelectCellDataSubformAndCharts(WorkScope, BatteryType)
             'call SetVar("ShowResistanceGraph", false)        
             call SetVar("ShowResistanceBarGraph", false)
             call alog("ShowResistanceBarGraph false Monthly" ) 
-
+ 
 			
         case SCOPE_TRO_TICK
         
@@ -504,7 +504,7 @@ sub SelectCellDataSubformAndCharts(WorkScope, BatteryType)
             'call SetVar("ShowResistanceGraph", false)        
             call SetVar("ShowResistanceBarGraph", false)        
             call alog("ShowResistanceBarGraph false tick" )   
-
+ 
 			
         case SCOPE_QUARTERLY
             call SetVar("Temp10Perc", true)
@@ -682,7 +682,7 @@ sub SelectCellDataSubformAndCharts(WorkScope, BatteryType)
     if IntercellMeasurements = 0 then
         'CellDataSubform = "TFRS"
     end if
-
+ 
     'IF IT HAS IntercellMeasurements then add it to the form
     if CellDataSubform = "TFR" and IntercellMeasurements > 0 then
         CellDataSubform = "TFRC"
@@ -699,7 +699,7 @@ sub SelectCellDataSubformAndCharts(WorkScope, BatteryType)
     elseif WorkScope = SCOPE_INTEGRITY OR WorkScope = SCOPE_QUARTERLY OR WorkScope = SCOPE_MONTHLY OR WorkScope = SCOPE_TRO_TICK then
         'CellDataSubform = "TFS"    
     end if
-
+ 
     call SetVar("CellDataSubform", CellDataSubform) 
     call aLog("Setting: " & CellDataSubform)
     
@@ -710,7 +710,7 @@ sub SelectCellDataSubformAndCharts(WorkScope, BatteryType)
     elseif GetVar("bImportedFromLDI") = 1 then
         call SetVar("ShowResistanceBarGraph", true)
     end if
-
+ 
     'SET THE LABEL FOR THE MILLIVOLT MEASUREMENTS
     if NOT flooded AND GetVar("MeasurmentType") = 1 then
         call SetVar("ResLbl","\nMillivolts")
@@ -729,7 +729,7 @@ sub SelectCellDataSubformAndCharts(WorkScope, BatteryType)
     ' Hide/Show charts
     
 end sub
-
+ 
 sub UpdateProblemCellVis()
     VisibleList = ""
     HiddenList = ""
@@ -746,11 +746,11 @@ sub UpdateProblemCellVis()
         call SetVar("ShowBRGraph",false)
         HiddenList =  HiddenList & "__10770_Battery Resistance Voltage Graph,"
     end if
-
+ 
     call RunTagCmd(VisibleList, "Visible 1")
     call RunTagCmd(HiddenList, "Visible 0")
 end sub
-
+ 
 sub UpdateSubformVisibility(BatteryType)
     
     VisibleList = ""
@@ -775,7 +775,7 @@ sub UpdateSubformVisibility(BatteryType)
         HiddenList =  HiddenList & "__10770_Battery Cell Data_TFS,"
         call SetVisible("TFS_grey", 0)
     end if    
-
+ 
     if CellDataSubform = "TFSC" then
         VisibleList = VisibleList & "__10770_Battery Cell Data_TFSC,"
         call SetVisible("TFSC_grey", 1)
@@ -864,8 +864,8 @@ sub UpdateSubformVisibility(BatteryType)
         HiddenList =  HiddenList & "__10770_Battery Cell Data_TFRCOS,"
         call SetVisible("TFRCOS_grey", 0)
     end if
-
-
+ 
+ 
     ' charts
     ShowVoltageGraph = GetVar("ShowVoltageGraph")
     ShowSGGraph = GetVar("ShowSGGraph")
@@ -887,7 +887,7 @@ sub UpdateSubformVisibility(BatteryType)
     else
         HiddenList =  HiddenList & "__10770_Battery Voltage Graph,"
     end if         
-
+ 
     if ShowSGGraph And HaveJars then
         VisibleList = VisibleList & "__10770_Battery SG Graph,"
         if ShowAllSGGraph then
@@ -898,7 +898,7 @@ sub UpdateSubformVisibility(BatteryType)
     else
         HiddenList =  HiddenList & "__10770_Battery SG Graph,__10770_Battery All Tests Specific Gravity Graph,"
     end if      
-
+ 
     bShowBRV = GetVar("ProblemCells") <> "None" 'GetVar("NumHistory") > 2
    
     call alog("2:Battery Resistance Voltage Graph" & CStr(ShowResistanceGraph) & ", " & CStr(HaveJars) & ", " & CStr(bShowBRV) )
@@ -910,9 +910,9 @@ sub UpdateSubformVisibility(BatteryType)
         call SetVar("ShowBRGraph",false)
         HiddenList =  HiddenList & "__10770_Battery Resistance Voltage Graph,"
     end if  
-
+ 
     call alog("Show Graph" & CStr(ShowResistanceBarGraph) & ", " & CStr(HaveJars ) )
-
+ 
     if ShowResistanceBarGraph And HaveJars then
         VisibleList = VisibleList & "__10770_Battery Resistance Graph,"
     else
@@ -930,7 +930,7 @@ sub UpdateSubformVisibility(BatteryType)
     else
         HiddenList =  HiddenList & "__10770_Battery All Tests Impedance Graph,"
     end if
-
+ 
     if ShowAllVolTempRes And HaveJars then
         if flooded then
             if ShowAllTGraph then
@@ -960,14 +960,14 @@ sub UpdateSubformVisibility(BatteryType)
     else
             HiddenList =  HiddenList & "__10770_Battery All Tests Temperature Graph,__10770_Battery All Tests Voltage Graph,"
     end if  
-
+ 
     if ShowCert Then
         VisibleList = VisibleList & "__10770_BatteryCertificationQuestions,__10770_BatteryQNextPage,"
     else
         HiddenList =  HiddenList & "__10770_BatteryCertificationQuestions,__10770_BatteryQNextPage,"
     end if
                     
-
+ 
     ' Set number of rows for cell data subform before setting visible flag, since otherwise, 
     ' subform can be hidden if rows = 0
     CellDataSubformName = "__10770_Battery Cell Data_" & CellDataSubform   
@@ -981,7 +981,7 @@ sub UpdateSubformVisibility(BatteryType)
         end if
         next
         call alog("PCells:: " & PCells)
-
+ 
         if GetVar("bImportedFromLDI") AND IsBlankString(GetVar("PilotCells")) AND NOT IsBlankString(PCells) then
             PCells = Left(PCells,Len(PCells)-1)
             call SetVar("PilotCells", PCells)
@@ -1007,7 +1007,7 @@ sub UpdateSubformVisibility(BatteryType)
                     
                     'call SetNdxVar("Jar", Ndx + 1, CellNo)
                     call alog(CellNo)
-
+ 
                     'if IsEmpty(GetNdxVar("Voltage",Ndx + 1)) then
                     '    call SetNdxVar("Voltage",Ndx + 1 , GetNdxVar("Voltage", CellNo))
                     '    call SetNdxVar("SpecGrav_1",Ndx + 1 , GetNdxVar("SpecGrav_1", CellNo))
@@ -1046,7 +1046,7 @@ sub UpdateSubformVisibility(BatteryType)
             call SetNdxVar("Jar",i,i)
         next    
     End If
-
+ 
     if MeasurementPoints > 120 then
         call SetVisible("__10770_Jars_120_240", 1)
     else
@@ -1092,26 +1092,25 @@ sub UpdateSubformVisibility(BatteryType)
         
         call RunTagCmd(CellTags, Vis)
     next
-
+ 
 end sub
-
-
+ 
+ 
 ' Run when MeasurementPoints, ScopeOfWork bTorque, IntercellCount changes
 sub UpdateScope()
-
+ 
     Dim Scope
     Dim BatteryType ' flooded or sealed
     
     call InitWorkScopes()
     call GetWorkScope(Scope, BatteryType)
-
+ 
     call g_Tasks.Process(Scope, BatteryType)
     
     ' Select correct cell data subform
     call SelectCellDataSubformAndCharts(Scope, BatteryType) 
-
+ 
     call UpdateSubformVisibility(BatteryType)   
-
+ 
     
 end sub
-
