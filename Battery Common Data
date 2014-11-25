@@ -1,6 +1,6 @@
 dim fieldmappings 
- 
- 
+
+
 '
 '******************************************************************
 ' Function MakeSafeDate(DateStr)
@@ -23,11 +23,11 @@ Function MakeSafeDate(DateStr)
         End If
         
     End If
- 
+
     MakeSafeDate = DateStr
     
 End Function
- 
+
 sub SetLimitsFromDbXX()
        with form 
         call alog("setlimitsfromdb")
@@ -61,7 +61,7 @@ end sub
 '
 '****************************************************************************
 Sub UpdateCellData()
- 
+
     Dim WorstCellNdx(4)
     Dim WorstCellValues(4)       
         
@@ -90,7 +90,7 @@ Sub UpdateCellData()
     MonitorLowVoltage =  ToNumber(GetVar("MonitorLowVoltage"))
     MonitorHighVoltage = ToNumber(GetVar("MonitorHighVoltage"))
     CriticalHighVoltage = ToNumber(GetVar("CriticalHighVoltage"))
- 
+
     CriticalLowSG = ToNumber(GetVar("LowSpecGrav"))
     MonitorLowSG =  ToNumber(GetVar("MonitorLowSG"))
     MonitorHighSG = ToNumber(GetVar("MonitorHighSG"))
@@ -105,11 +105,11 @@ Sub UpdateCellData()
     If IsBlankString(MonitorHighResistance) then
         MonitorHighResistance = 40
     End If
- 
+
     If IsBlankString(CriticalHighResistance) then
         CriticalHighResistance = 50
     End If
- 
+
     MaxPoints = GetVar("MeasurementPoints")
     
     If GetVar("PilotReadings") Then
@@ -130,10 +130,10 @@ Sub UpdateCellData()
     call aLog("NumJars= " & form.NumJars)
     
     If form.NumJars <> Empty Then 
- 
- 
+
+
          
- 
+
         
         for  i = 1 to MaxPoints
         
@@ -159,7 +159,7 @@ Sub UpdateCellData()
             Call SetNdxVar("ChartImpedence",i,GetNdxVar("Impedence",CellNo))
             Call SetNdxVar("ChartSpecGrav_1",i,GetNdxVar("SpecGrav_1",CellNo))
             Call SetNdxVar("ChartTemF_1",i,GetNdxVar("TemF_1",CellNo))
- 
+
             
             call aLog("Checking cell " & CellNo)
       
@@ -203,7 +203,7 @@ Sub UpdateCellData()
                     call SetVar("ChartVoltage_SymbolType_" & i, SYMBOL_CIRCLE)
                     call SetVar("ChartVoltage_SymbolColor_" & i , CLR_RED)                   
                     CellBad = true
- 
+
                     for wc = 0 to 4
                         if WorstCellNdx(wc) = 0 then
                             WorstCellNdx(wc) = CellNo
@@ -275,7 +275,7 @@ call aLog("Z,i= " & Impedence & ", " & CellNo)
                 if GetNdxVar("Cell_OverrideBaseline", CellNo) then
                     LastImpedence = GetNdxVar("Cell_OverrideBaselineVal",CellNo)
                 end if 
- 
+
                 Tag =  "Impedence_" & CellNoOffset & ","
                             
                 Exclude = GetVar("Jar_exclude_" & CellNo)
@@ -284,18 +284,18 @@ call aLog("Z,i= " & Impedence & ", " & CellNo)
                     NumValidJars = NumValidJars + 1
                 End If
             
- 
+
 call aLog("Z,LastZ= " & Impedence & ", " & LastImpedence)
- 
- 
+
+
                 If ( Not IsBlankString(Impedence) ) And ( Not IsBlankString(LastImpedence) ) And IsNumeric(Impedence) And IsNumeric(LastImpedence) Then
                     ChangePercentage = ( Divide( Impedence - LastImpedence , LastImpedence ) ) * 100
- 
+
                     '
                     ' find worst 5 cells
                     '
                     foundWC = false
- 
+
                     for wc = 0 to 4
                         if WorstCellNdx(wc) = 0 then
                             WorstCellNdx(wc) = CellNo
@@ -304,38 +304,38 @@ call aLog("Z,LastZ= " & Impedence & ", " & LastImpedence)
                             exit for
                         end if
                     next
- 
+
                     if not foundWC then
                         minndx = 0
                         minval = WorstCellValues(0)
- 
+
                         for wc = 1 to 4
                             if minval > WorstCellValues(wc) then
                                 minndx = wc
                                 minval = WorstCellValues(wc)
                             end if
                         next                        
- 
+
                         if minval < ChangePercentage then
                             WorstCellNdx(minndx) = CellNo
                             WorstCellValues(minndx) = ChangePercentage
                         end if
- 
+
                     end if
- 
+
                     
                     ChangePercentage = Round(ChangePercentage, 1)
- 
+
                     'call aLog("ChangePercentage = " & ChangePercentage)
                     call aLog("ChangePercentage = " & ChangePercentage & ", " & CriticalHighResistance)
- 
+
                     if ChangePercentage > CriticalHighResistance then 
                         bOk = false
                         call SetVar("Chartimpedence_SymbolType_" & i, SYMBOL_CIRCLE)
                         call SetVar("Chartimpedence_SymbolColor_" & i , CLR_RED)
                         RedTags = RedTags & Tag
                         CellBad = true
- 
+
                         if Not ResErrCellSet then
                             'call SetVar("JarDropDown", i)
                             ResErrCellSet = true
@@ -345,9 +345,9 @@ call aLog("Z,LastZ= " & Impedence & ", " & LastImpedence)
                         call SetVar("Chartimpedence_SymbolType_" & i, SYMBOL_CIRCLE)
                         call SetVar("Chartimpedence_SymbolColor_" & i, CLR_LIME)
                         BlueTags = BlueTags & Tag
- 
+
                     end if
- 
+
                 End If 
             end if
         
@@ -371,7 +371,7 @@ call aLog("Z,LastZ= " & Impedence & ", " & LastImpedence)
             'DefaultMan        = GetVar("DefaultMan")
             'DefaultModelGuid = GetVar("DefaultModelGuid")
             'DefaultModel = GetVar("DefaultModel")
- 
+
             'call aLog("Cell:" & i & ", checking model/man")
             'call aLog("ModelGuid=" & ModelGuid & ",ManGuid=" & ManGuid & ",DefaultManGuid=" & DefaultManGuid & ",DefaultModelGuid=" & DefaultModelGuid) 
             'call aLog("DefaultMan=" & DefaultMan & ",DefaultModel=" & DefaultModel)
@@ -381,7 +381,7 @@ call aLog("Z,LastZ= " & Impedence & ", " & LastImpedence)
             '
             'If  (IsBlankString(ManGuid) Or IsBlankString(ModelGuid) Or IsBlankString(CellModel) Or IsBlankString(CellMan)) _
             '    and DefaultManGuid <> Empty  and DefaultModelGuid <> Empty Then
- 
+
             '    call aLog("Setting Man/Model")
                 
             '    Call SetNdxVar( "Cell_ManGuid", i, DefaultManGuid )
@@ -568,7 +568,7 @@ call aLog("Z,LastZ= " & Impedence & ", " & LastImpedence)
         Call RunTagCmd("current__ProblemCell_Row_1", "WrapTextToTable '" & BadCells & "'")
         Call SetVar("current__ProblemCellsHeading", "OUT OF LIMIT CELLS IN CURRENT INSPECTION")            
         
- 
+
         ' Average Voltage/temperature/specific gravity
         VoltageAvg = Divide(VoltageSum, Form.NumJars)
         call SetVar("AvgVolts", VoltageAvg)
@@ -617,7 +617,7 @@ call aLog("Z,LastZ= " & Impedence & ", " & LastImpedence)
         if form.NumJars > 0 then
             if GetVar("Temp10Perc") then
                 TenPerc = Round(Divide(form.NumJars, 10) + 0.5)
- 
+
                 Required = TenPerc - TempReadings
                 
                 MsgTxt = "* Please take at least 10% of cell temperature readings (" & TenPerc & " Cells). " & TempReadings & " Completed. "
@@ -679,9 +679,9 @@ call aLog("Z,LastZ= " & Impedence & ", " & LastImpedence)
         'End If
                    
     End If
- 
+
    ' call UpdateAllCellBaselineDates()
- 
+
     Call SetVar("VoltageDirty", false)
     Call SetVar("OpenVoltageDirty", false)
     Call SetVar("AfterLoadVoltageDirty", false)
@@ -697,7 +697,7 @@ call aLog("Z,LastZ= " & Impedence & ", " & LastImpedence)
         
     Call aLog("UpdateCellData End")
 End Sub
- 
+
 '****************************************************************************
 '
 ' Sub UpdateStrapData()
@@ -746,7 +746,7 @@ Sub UpdateStrapData()
                 Variation = ( Divide( StrapImpedence - Avg, Avg ) ) * 100
                 Variation = Round(Variation, 1)
             end if 
- 
+
             call SetNdxVar("Strap_V", Ndx, Variation)
             'call aLog("Ndx=" & Ndx & ",Variation = " & Variation)
                         
@@ -792,29 +792,29 @@ Sub UpdateStrapData()
     End If
   
 End Sub
- 
- 
+
+
 '
 ' Sub UpdateManufacturerList()
 '
 Sub UpdateManufacturerList()
     Dim List
- 
+
     PrevCount = GetVar( "ManufacturerCount" )
- 
+
     For i = 1 to PrevCount 
         Call SetNdxVar( "ManName", i, Empty )
         Call SetNdxVar( "ManGUID", i, Empty )    
     Next
- 
+
     NamePrefix = "db_Name_"
     GuidPrefix = "db_CompanyGUID_"
- 
+
     SqlString = "SELECT Name, CompanyGUID FROM PdbAddrHeader WHERE CType = 1 AND bIsDel = 0 Order By Name ASC"
     Call Application.QueryDatabase(Form.formId, SqlString, 1 )
- 
+
     'LogMsg( SqlString )
- 
+
     i = 0
     Do 
         i = i + 1
@@ -825,28 +825,28 @@ Sub UpdateManufacturerList()
 	If IsEmpty( ManName ) Or IsEmpty( ManGuid ) Then
 	    Exit Do
 	End If
- 
+
         If i = 1 Then
             List = ManName
         Else
             List = List & "\n" & ManName
         End If
- 
+
         Call SetNdxVar( "ManName", i, ManName )
         Call SetNdxVar( "ManGUID", i, ManGuid )
- 
+
         Call SetVar( NameVar, Empty )
         Call SetVar( GuidVar, Empty )
     Loop Until False
- 
- 
+
+
     Call SetVar( "ManufacturerCount", i - 1 )
- 
+
     Call SetVar( "ManufacturerList", List )
- 
+
 End Sub
- 
- 
+
+
 '
 ' Function GetModelList
 '
@@ -854,7 +854,7 @@ End Sub
 '
 Function GetModelList( Manufacturer )
     Dim List
- 
+
     call alog("GetModelList " & Manufacturer)
     
     SqlString = "SELECT Distinct Model FROM Model_Data d, PdbAddrHeader a WHERE d.TYPE = 1 AND d.bIsDel=0 AND a.Name = '" & _ 
@@ -863,10 +863,10 @@ Function GetModelList( Manufacturer )
     'call alog( SqlString )
     VarName = "db_Model_"
     i = 1
- 
+
     Do
         Var = GetVar( VarName & i )
- 
+
         If Not IsEmpty( Var ) Then
             If i = 1 Then
                 List = Var 
@@ -874,14 +874,14 @@ Function GetModelList( Manufacturer )
                 List = List & "\n" & Var 
             End If
         End If
- 
+
         i = i + 1
 'call alog("Var = " & Var ) 
     Loop Until IsEmpty( Var )
- 
+
     GetModelList = List
 End Function
- 
+
 '****************************************************************************
 ' Function GetBaselineImpedence( Model, Manufacturer )
 '
@@ -893,20 +893,20 @@ End Function
 '
 '****************************************************************************
 Function GetBaselineImpedence( ModelGuid, ManufacturerGuid ) 
- 
+
     Baseline = Empty
- 
+
     If Not IsEmpty( ModelGuid ) And Not IsEmpty( ManufacturerGuid ) Then
         SqlString = "SELECT UsrString5 as which_baseline, UsrFloat3 as man_baseline, " &_ 
                     "UsrFloat4 as megger_baseline, UsrFloat5 as user_baseline FROM Model_Data " &_
                     "WHERE TYPE = 1 AND ManufacturerGuid = '" & EscQuotes(ManufacturerGuid) &_
                     "' AND ModelGuid = '" & EscQuotes(ModelGuid) & "'"
- 
+
         Call Application.QueryDatabase(Form.formId, SqlString, 0)
         'LogMsg( SqlString )        
         'LogMsg( "Data: which= " & GetVar( "db_which_baseline") & ", man = " & GetVar("db_man_baseline") & ",megger=" & GetVar("db_megger_baseline") & ", user=" & GetVar("db_user_baseline") )
         WhichBaseline = GetVar( "db_which_baseline" )
- 
+
         If WhichBaseline = "manufacturer" Then
             Baseline = GetVar( "db_man_baseline" )
         ElseIf WhichBaseline = "megger" Then
@@ -919,13 +919,13 @@ Function GetBaselineImpedence( ModelGuid, ManufacturerGuid )
         Call SetVar( "db_man_baseline", Empty )
         Call SetVar( "db_megger_baseline", Empty )
         Call SetVar( "db_user_baseline", Empty )
- 
+
     End If       
     
     GetBaselineImpedence = Baseline
- 
+
 End Function
- 
+
 '****************************************************************************
 ' Function GetVarForSQL()
 '
@@ -934,13 +934,13 @@ End Function
 '
 '****************************************************************************
 Function GetVarForSQL( TagName )        
- 
+
     Value = GetVar( TagName )
     GetVarForSQL = PrepareSQLVar( Value )
- 
+
 End Function
- 
- 
+
+
 '****************************************************************************
 ' Function PrepareSQLVar()
 '
@@ -950,7 +950,7 @@ End Function
 '
 '****************************************************************************
 Function PrepareSQLVar( Value )
- 
+
     If IsEmpty( Value ) Or IsNull( Value ) Then
 	PrepareSQLVar = Empty
     ElseIf VarType( Value ) = vbString Then
@@ -959,9 +959,9 @@ Function PrepareSQLVar( Value )
     Else
         PrepareSQLVar = Value
     End If
- 
+
 End Function
- 
+
 '****************************************************************************
 ' Sub OnBatteryFormPageUpdate()
 '
@@ -971,52 +971,52 @@ End Function
 '
 '****************************************************************************
 Sub OnBatteryFormPageUpdate()
- 
+
     if Not Form.FormLoadedValues Then
         Exit Sub
     End If
- 
+
     '
     ' Set Test Impedence Average 
     '
     ' TODO: Consider joining CalcChangePercentages and this loop for speed.
     Sum = 0
     Count = 0
- 
+
     For i = 1 To Form.NumCells
- 
+
         Impedence = GetNdxVar( "Impedence", i )
         LastImpedence = GetVar( "db_Impedence_" & i & "_1")
- 
+
         ' Update C_n values
         ChangePercentage = Empty
         If Not IsEmpty( Impedence ) Then
- 
+
             If Not IsEmpty( LastImpedence ) Then
                 ChangePercentage = ( Divide( Impedence - LastImpedence , LastImpedence ) ) * 100
                 ChangePercentage = Round(ChangePercentage, 1)
             End If 
- 
+
             Sum = Sum + Impedence
             Count = Count + 1
         End If
         Call SetNdxVar( "C", i, ChangePercentage )
- 
+
     Next
- 
+
     If ( Sum > 0 AND Count > 0 ) Then
         AvgValue = Divide( Sum, Count )
         Call SetVar( "TestImpedenceAvg", AvgValue )
     Else
         Call SetVar( "TestImpedenceAvg", Empty )
     End If
- 
+
     ' Update C_n values
     ' Call CalcChangePercentages()
- 
+
     ' Update Rest of the cells
     Call UpdateBatteryCells()
- 
+
     '
     ' Updates needed only if popup dialog has returned
     '
@@ -1024,9 +1024,9 @@ Sub OnBatteryFormPageUpdate()
         Call SetVar( "ModelManUpdated", Empty ) 
         Call DoCellCalculations()
     End If
- 
+
 End Sub
- 
+
 '****************************************************************************
 ' Sub UpdateBatteryCells()
 '
@@ -1034,58 +1034,58 @@ End Sub
 '
 '****************************************************************************
 Sub UpdateBatteryCells()
- 
+
     With Form 
- 
+
         If .NumCells <> Empty Then 
             For  i = 1 to .NumCells
- 
+
                 Impedence = GetNdxVar("Impedence", i)
- 
+
                 V = Empty
                 D = Empty
                 If Not IsEmpty( Impedence ) Then
- 
+
                     'V_n OnUpdate
                     BaseImpedence = GetNdxVar("baseimpedence", i)
- 
+
                     If Not IsEmpty( BaseImpedence ) Then
                         Difference = SafeSubtract( Impedence, Baseimpedence )
                         V = 100 * Divide( Difference, Baseimpedence )
                     End If
- 
+
                     'D_n OnUpdate
                     If Not IsEmpty( .TestImpedenceAvg ) Then
                         Difference = SafeSubtract( Impedence , .TestImpedenceAvg )
                         D = 100 * Divide( Difference, .TestImpedenceAvg )
                     End If
- 
+
                 End If
                 Call SetNdxVar("V", i, V )
                 Call SetNdxVar("D", i, D)
- 
+
                 'Cell_ManGuid_n update
                 ManGuid = GetNdxVar("Cell_ManGuid", i)
                 If IsBlankString( ManGuid ) And Not IsBlankString( .DefaultManGuid ) Then
                     Call SetNdxVar( "Cell_ManGuid", i, .DefaultManGuid )
                     Call SetNdxVar( "Cell_Man", i, .DefaultMan )
                 End If
- 
+
                 ' Cell_ModelGuid_n update
                 ModelGuid = GetNdxVar("Cell_ModelGuid", i)
                 If IsBlankString( ModelGuid ) And Not IsBlankString( .DefaultModelGuid ) Then
                     Call SetNdxVar("Cell_ModelGuid", i, .DefaultModelGuid )
                     Call SetNdxVar( "Cell_Model", i, .DefaultModel )            
                 End If
- 
+
             Next
         End If
- 
+
     End With
- 
+
 End Sub
- 
- 
+
+
 '****************************************************************************
 ' Sub CalcChangePercentages()
 '
@@ -1097,12 +1097,12 @@ End Sub
 '
 '****************************************************************************
 Sub CalcChangePercentages()
- 
+
     If form.NumCells <> Empty Then 
         For  i = 1 to form.NumCells
             Impedence = GetNdxVar( "Impedence" , i )
             LastImpedence = GetVar( "db_Impedence_" & i & "_1")
- 
+
             If ( Impedence <> Empty ) And ( LastImpedence <> Empty ) Then
                 ChangePercentage = ( Divide( Impedence - LastImpedence , LastImpedence ) ) * 100
                 ChangePercentage = Round(ChangePercentage, 1)
@@ -1112,7 +1112,7 @@ Sub CalcChangePercentages()
     End If
     
 End Sub
- 
+
 '****************************************************************************
 ' Sub RefreshCell( CellNo )
 '
@@ -1120,25 +1120,25 @@ End Sub
 '
 '****************************************************************************
 Sub RefreshCellBaseline( CellNo )
- 
+
     ModelGuid = GetNdxVar( "Cell_ModelGuid", CellNo )
     ManGuid = GetNdxVar( "Cell_ManGuid", CellNo )
     Baseline = GetBaselineImpedence( ModelGuid, ManGuid )
- 
+
     If IsEmpty( Baseline ) Then
         DefaultModelGuid = GetVar( "DefaultModelGuid" )
         DefaultManGuid = GetVar( "DefaultManGuid" )
         Baseline = GetBaselineImpedence( DefaultModelGuid, DefaultManGuid )
     End If
- 
+
     Call SetNdxVar( "baseimpedence", CellNo, Baseline )
- 
+
     ' Update the baseline_impedence used in graphs, if this is the first cell.
     If CellNo = 1 And Not IsEmpty( Baseline ) Then
         Call SetVar( "baseline_impedence" , Baseline )
         Call UpdateDefaultLimits(ManGuid, ModelGuid, Baseline)
     End If
- 
+
 End Sub
 '****************************************************************************
 ' Sub UpdateCellsWithoutModels()
@@ -1150,41 +1150,41 @@ Sub UpdateCellsWithoutModels()
     If IsEmpty( Form.NumCells ) or Form.NumCells <= 0 Then
         Exit Sub
     End If
- 
+
     call aLog("UpdateCellsWithoutModels - start")
     
     Dim Changed
     Dim BaselineHash
     Dim DefaultBaseline
- 
+
     DefaultBaselineCalculated = False
- 
+
     Set BaselineHash = CreateObject("Scripting.Dictionary") 
- 
+
     For i = 1 To Form.NumCells
 	Changed = False
         ModelGuid = GetNdxVar( "Cell_ModelGuid", i )
         ManGuid = GetNdxVar( "Cell_ManGuid", i )
         
         'LogMsg("Cell " & i & ", ModelGuid=" & ModelGuid & ", ManGuid = " & ManGuid )
- 
+
         If IsBlankString( ModelGuid ) Then
             ModelGuid = Form.DefaultModelGuid
             Call SetNdxVar( "Cell_ModelGuid", i, ModelGuid )            
             Call SetNdxVar( "Cell_Model", i, Form.DefaultModel )            
 	    Changed = True
         End If
- 
+
         If IsBlankString( ManGuid ) Then
             ManGuid = Form.DefaultManGuid
             Call SetNdxVar( "Cell_ManGuid", i, ManGuid )
             Call SetNdxVar( "Cell_Man", i, Form.DefaultMan )
 	    Changed = True
         End If        
- 
+
 	' Recalculate baseline impedences if Changed.
 	If Changed Then
- 
+
 	    ' Look in hash table first.
 	    If BaselineHash.Exists( ModelGuid ) Then
 		Baseline = BaselineHash.Item( ModelGuid )
@@ -1192,9 +1192,9 @@ Sub UpdateCellsWithoutModels()
 		Baseline = GetBaselineImpedence( ModelGuid, ManGuid )
 		BaselineHash.Item( ModelGuid ) = Baseline
 	    End If
- 
+
 	    If IsEmpty( Baseline ) Then
- 
+
 		If Not DefaultBaselineCalculated Then
 		    DefaultBaseline = GetBaselineImpedence( Form.DefaultModelGuid, Form.DefaultManGuid )
 		    DefaultBaselineCalculated = True
@@ -1202,13 +1202,13 @@ Sub UpdateCellsWithoutModels()
 		End If
 		Baseline = DefaultBaseline
 	    End If
- 
+
 	    Call SetNdxVar( "baseimpedence", i, Baseline )
- 
+
 	End If 
- 
+
     Next
- 
+
     ' Default Baseline: set to first cell's baseline, or if thats empty, set to default model's baseline
     CommonBaseline = 0
     FirstCellBaseline = GetNdxVar( "baseimpedence", 1 )
@@ -1216,7 +1216,7 @@ Sub UpdateCellsWithoutModels()
     ' Guid of model from which baseline impedence is set
     BaselineModelGuid = Empty
     BaselineManGuid = Empty
- 
+
     If Not IsEmpty( FirstCellBaseline ) Then
         CommonBaseline = FirstCellBaseline
         BaselineModelGuid = GetNdxVar( "Cell_ModelGuid", 1 )
@@ -1235,7 +1235,7 @@ Sub UpdateCellsWithoutModels()
     Call UpdateDefaultLimits(BaselineManGuid, BaselineModelGuid, CommonBaseline)
     call aLog("UpdateCellsWithoutModels - end")
 End Sub
- 
+
 '****************************************************************************
 ' Sub UpdateDefaultLimits
 '
@@ -1244,26 +1244,26 @@ End Sub
 '
 '****************************************************************************
 Sub UpdateDefaultLimits( ManGuid, ModelGuid, BaselineImpedence )
- 
+
     If IsEmpty( ManGuid ) OR IsEmpty( ModelGuid ) Then
         Exit Sub
     End If
- 
+
     SqlString = "SELECT UsrFloat6 as model_warn_perc, " &_ 
                 "UsrFloat7 as model_fail_perc FROM Model_Data " &_
                 "WHERE TYPE = 1 AND ManufacturerGuid = '" & EscQuotes(ManGuid) &_
                 "' AND ModelGuid = '" & EscQuotes(ModelGuid) & "'"
- 
+
     Call Application.QueryDatabase(Form.formId, SqlString, 0)
     'LogMsg( SqlString )        
- 
+
     WarnPerc  = GetVar( "db_model_warn_perc" )
     FailPerc  = GetVar( "db_model_fail_perc" )
     WarnPlus  = BaselineImpedence * (100 + WarnPerc) / 100
     WarnMinus = BaselineImpedence * (100 - WarnPerc) / 100
     FailPlus  = BaselineImpedence * (100 + FailPerc) / 100
     FailMinus = BaselineImpedence * (100 - FailPerc) / 100
- 
+
     Call SetVar( "warning_percentage", WarnPerc)
     Call SetVar( "failure_percentage", FailPerc)
     ' Call SetVar( "warn_plus", WarnPlus)
@@ -1271,7 +1271,7 @@ Sub UpdateDefaultLimits( ManGuid, ModelGuid, BaselineImpedence )
     ' Call SetVar( "fail_plus", FailPlus)
     ' Call SetVar( "fail_minus", FailMinus)
 End Sub
- 
+
 '****************************************************************************
 ' Sub DoCellCalculations
 '
@@ -1286,21 +1286,21 @@ Sub DoCellCalculations()
     If IsEmpty( Form.NumCells ) or Form.NumCells <= 0 Then
         Exit Sub
     End If
- 
+
     Set ModelHash = CreateObject("Scripting.Dictionary")
     Set ManHash = CreateObject("Scripting.Dictionary")
     Set BaselineHash = CreateObject("Scripting.Dictionary") 
- 
+
     ' Default Baseline Impedence
     If Not IsBlankString( Form.DefaultModel ) And Not IsBlankString( Form.DefaultMan ) Then
         If IsBlankString( Form.DefaultModelGuid ) Then
 	    Form.DefaultModelGuid = GetModelGuid( Form.DefaultModel, Form.DefaultMan )
 	End If
- 
+
 	If IsBlankString( Form.DefaultManGuid ) Then
 	    Form.DefaultManGuid = GetManGuid( Form.DefaultMan )
 	End If
- 
+
         DefaultBaseline = GetBaselineImpedence( Form.DefaultModelGuid, Form.DefaultManGuid )
 	BaselineHash.Item( Form.DefaultModelGuid ) = DefaultBaseline
     End If
@@ -1324,12 +1324,12 @@ Sub DoCellCalculations()
             ModelGuid = Form.DefaultModelGuid
             Call SetNdxVar( "Cell_ModelGuid", i, ModelGuid )            
         End If
- 
+
         If IsBlankString( ManGuid ) Then
             ManGuid = Form.DefaultManGuid
             Call SetNdxVar( "Cell_ManGuid", i, ManGuid )
         End If        
- 
+
         ' First look in the table, possibly saving the trip to the database
         '
         If ModelHash.Exists( ModelGuid ) Then
@@ -1338,18 +1338,18 @@ Sub DoCellCalculations()
             Model = GetModelName( ModelGuid )
             ModelHash.Item( ModelGuid ) = Model
         End If
- 
+
         Call SetNdxVar( "Cell_Model", i, Model)
- 
+
         If ManHash.Exists( ManGuid ) Then
 	    Man = ManHash.Item( ManGuid )
 	Else
             Man = GetManName( ManGuid )
             ManHash.Item( ManGuid ) = Man
         End If
- 
+
         Call SetNdxVar( "Cell_Man", i, Man)
- 
+
 	' Look in hash table first.
 	If BaselineHash.Exists( ModelGuid ) Then
 	    Baseline = BaselineHash.Item( ModelGuid )
@@ -1357,21 +1357,21 @@ Sub DoCellCalculations()
 	    Baseline = GetBaselineImpedence( ModelGuid, ManGuid )
 	    BaselineHash.Item( ModelGuid ) = Baseline
 	End If
- 
+
         If IsEmpty( Baseline ) Then
             Baseline = DefaultBaseline
         End If
 	Call SetNdxVar( "baseimpedence", i, Baseline )
     Next
- 
+
     ' Default Baseline: set to first cell's baseline, or if that's empty, set to default model's baseline
     CommonBaseline = 0
     FirstCellBaseline = GetNdxVar( "baseimpedence", 1 )
- 
+
     ' Guid of model from which baseline impedence is set
     BaselineModelGuid = Empty
     BaselineManGuid = Empty
- 
+
     If Not IsEmpty( FirstCellBaseline ) Then
         CommonBaseline = FirstCellBaseline
         BaselineModelGuid = GetNdxVar( "Cell_ModelGuid", 1 )
@@ -1382,11 +1382,11 @@ Sub DoCellCalculations()
         BaselineManGuid = Form.DefaultManGuid
     End If
     Call SetVar( "baseline_impedence" , CommonBaseline )
- 
+
     Call UpdateDefaultLimits(BaselineManGuid, BaselineModelGuid, CommonBaseline)
- 
+
 End Sub
- 
+
 '****************************************************************************
 ' Sub UpdateCellDropDowns
 '
@@ -1394,7 +1394,7 @@ End Sub
 '**************************************************************************** 
 Sub UpdateCellDropDowns()
     With Form 
- 
+
         If .NumStraps <> Empty Then 
             For  i = 1 to .NumStraps
                 '.Strap_Conn_1!list = GetVar("CellNoList")
@@ -1402,7 +1402,7 @@ Sub UpdateCellDropDowns()
         End If
     End With
 End Sub
- 
+
 '****************************************************************************
 ' Function GetManGuid
 '
@@ -1420,9 +1420,9 @@ Function GetManGuid( Manufacturer )
     Else
         GetManGuid = Empty
     End If
- 
+
 End Function
- 
+
 '****************************************************************************
 ' Function GetManName
 '
@@ -1441,7 +1441,7 @@ Function GetManName( Guid )
         GetManName = Empty
     End If
 End Function
- 
+
 '****************************************************************************
 ' Function GetModelGuid
 '
@@ -1461,9 +1461,9 @@ Function GetModelGuid( Model, Manufacturer )
     Else
         GetModelGuid = Empty
     End If
- 
+
 End Function
- 
+
 '****************************************************************************
 ' Function GetModelName
 '
@@ -1481,17 +1481,17 @@ Function GetModelName( ModelGuid )
     Else
         GetModelName = Empty
     End If
- 
+
 End Function
- 
- 
+
+
 Function EscQuotes( Value )
     If Not IsBlankString( Value ) AND VarType( Value ) = vbString Then
 	Value = Replace( Value, "'", "''" )
     End If
     EscQuotes = Value
 End Function
- 
+
 '******************************************************
 ' Function GetDateLegends()
 '
@@ -1499,7 +1499,7 @@ End Function
 '******************************************************
 Function GetDateLegends()
     Dim Legends()
- 
+
     NumHistory = GetVar("NumHistory")
     
     if NumHistory > 5 then NumHistory = 5 
@@ -1507,59 +1507,61 @@ Function GetDateLegends()
     CurrentFormDate = MakeSafeDate(GetVar("TestDate"))
     
     'LogMsg("NumHistory: " & NumHistory & ", TestDate = " & CurrentFormDate)
- 
+
 call alog("Num History = " + CStr( NumHistory))
 call alog("date = " + CurrentFormDate )
- 
+
     If GetVar("ChartDataSet") then
         Total = GetVar("ChartDataTotal")-1
         if Total < 0 then Total = 0
         ReDim Legends(Total)
         Legends(0) = CurrentFormDate
-        For i = 1 to Total
-            DateTagNdx = GetVar("ChartDate_" & i)
-            DateTag = "db_TestDate_" & DateTagNdx
-            Legends(i) = GetVar( DateTag )
-            call aLog("Legends(" & i & ") = (" & DateTag & ") " & Legends(i))
-        Next
-        
+        if Total > 0 then 'jad
+            For i = 1 to Total
+                DateTagNdx = GetVar("ChartDate_" & i)
+                DateTag = "db_TestDate_" & DateTagNdx
+                Legends(i) = GetVar( DateTag )
+                call aLog("Legends(" & i & ") = (" & DateTag & ") " & Legends(i))
+            Next
+        End if
+    
         GetDateLegends = Legends
     ElseIf NumHistory > 1 Then
- 
+
         ' Set chart legends
         ReDim Legends(NumHistory - 1)
         Legends(0) = CurrentFormDate
- 
+
         For i = 1 to NumHistory - 1
             DateTag = "db_TestDate_" & i
             Legends(i) = GetVar( DateTag )
             call aLog("Legends(" & i & ") = (" & DateTag & ") " & Legends(i))
         Next
- 
+
         GetDateLegends = Legends
- 
+
     ElseIf Not IsBlankString( CurrentFormDate ) Then
         GetDateLegends = Array(CurrentFormDate)
     Else
         ' we need a legend for the current date even if the date has not been entered.
         GetDateLegends = Array("")
     End If
- 
+
 End Function
- 
+
 Function GetDateImpLegends()
     Dim Legends()
- 
+
     NumHistory = GetVar("NumHistory")
     
     if NumHistory > 5 then NumHistory = 5 
         
     CurrentFormDate = MakeSafeDate(GetVar("TestDate"))
     'LogMsg("NumHistory: " & NumHistory & ", TestDate = " & CurrentFormDate)
- 
+
 call alog("Num History = " + CStr( NumHistory))
 call alog("date = " + CurrentFormDate )
- 
+
     If GetVar("ChartDataSet") AND NumHistory >= 1 then
         ReDim Legends(0)
         Total = GetVar("ChartDataImpTotal")
@@ -1589,29 +1591,29 @@ call alog("date = " + CurrentFormDate )
         end if
         GetDateImpLegends = Legends
     ElseIf NumHistory > 1 Then
- 
+
         ' Set chart legends
         ReDim Legends(NumHistory - 1)
         Legends(0) = CurrentFormDate
- 
+
         For i = 1 to NumHistory - 1
             DateTag = "db_TestDate_" & i
             Legends(i) = GetVar( DateTag )
             call aLog("Legends(" & i & ") = (" & DateTag & ") " & Legends(i))
         Next
- 
+
         GetDateImpLegends = Legends
- 
+
     ElseIf Not IsBlankString( CurrentFormDate ) Then
         GetDateImpLegends = Array(CurrentFormDate)
     Else
         ' we need a legend for the current date even if the date has not been entered.
         GetDateImpLegends = Array("")
     End If
- 
+
 End Function
- 
- 
+
+
 '******************************************************
 ' Function ShowChartLegends()
 '
@@ -1619,7 +1621,7 @@ End Function
 '******************************************************
 Sub ShowChartLegends()
     call alog("ShowChartLegends()")
- 
+
     Legends = GetDateLegends()
     Legends2 = GetDateImpLegends()
     
@@ -1633,8 +1635,8 @@ Sub ShowChartLegends()
     Call ShowLegends("ch9", Legends)   
     On Error Goto 0
 End Sub
- 
- 
+
+
 '***************************************
 ' UpdateChartPageHeaders() 
 '
@@ -1643,7 +1645,7 @@ End Sub
 '
 '***************************************
 Sub UpdateChartPageHeaders( ChartPageNo )
- 
+
     StringName = GetVar("String")
     TestDate = GetVar("TestDate")
     If IsBlankString( StringName ) Then
@@ -1652,75 +1654,75 @@ Sub UpdateChartPageHeaders( ChartPageNo )
     If IsBlankString( TestDate ) Then
         TestDate = "________________"
     End If
- 
+
     Header = "STRING: " & StringName & "     TEST DATE: " & TestDate
     Call SetVar("testheader_charts" & ChartPageNo & "page", Header)
- 
+
 End Sub
- 
+
 '**************************
 ' Sub ShowCellPopup( CellNo )
 '
 '
 '**************************
 Sub ShowCellPopup( CellNo )
- 
+
     Call SetVar( "cellpopup_CellNo", CellNo )
     Call SetVar( "cellpopup_returnvar", "bat_return" )
     Application.DoModalForm( "Cell Information" )
- 
+
 End Sub
- 
- 
+
+
 '**************************
 ' Sub ShowStrapPopup( StrapNo )
 '
 '
 '**************************
 Sub ShowStrapPopup( StrapNo )
- 
+
     Call SetVar( "strappopup_StrapNo", StrapNo )
     Application.DoModalForm("Strap Information")
- 
+
 End Sub
- 
+
 '******************************************
 ' Sub UpdateCellTime( Value, RowNum )
 '
 ' The value of the cell which was changed.
 ' Just used to check if it's empty
 '******************************************
- 
+
 Sub UpdateCellTime( Value, RowNum )
- 
+
     If IsBlankString( GetNdxVar( "Time", RowNum ) ) And Not IsBlankString( Value ) Then
         TimeNow = Now
         TimeStr = Hour( TimeNow ) & ":" & Minute( TimeNow )    
- 
+
         Call SetNdxVar( "Time", RowNum,  TimeStr)
     End If
- 
+
 End Sub
- 
- 
+
+
 '******************************************
 ' Sub UpdateStrapTime( Value, RowNum )
 '
 ' The value of the cell which was changed.
 ' Just used to check if it's empty
 '******************************************
- 
+
 Sub UpdateStrapTime( Value, RowNum )
- 
+
     If IsBlankString( GetNdxVar( "Strap_Time", RowNum ) ) And Not IsBlankString( Value ) Then
         TimeNow = Now
         TimeStr = Hour( TimeNow ) & ":" & Minute( TimeNow )    
- 
+
         Call SetNdxVar( "Strap_Time", RowNum,  TimeStr)
     End If
- 
+
 End Sub
- 
+
 '************************************************
 '
 ' Function SplitMultiLineField()
@@ -1732,44 +1734,44 @@ End Sub
 Function SplitMultiLineField( Value )
     Dim Lines()
     LineCount = 0
- 
+
     Buffer = Value
     Pos = InStr(Buffer, Chr(13)) '  Gets Starting position of ASCII 13
     NewString = ""
- 
+
     While Pos > 0
         If Pos > 0 Then    ' If > 0 then we have an ASCII 13 in the buffer
- 
+
             Data = Left(Buffer, Pos - 1)
- 
- 
+
+
             Redim Preserve Lines(LineCount)
             Lines( LineCount ) = Data
             LineCount = LineCount + 1
- 
+
             ' We want to delete the data that we just got from the buffer including the ASCII 13
             Buffer = Mid(Buffer, Pos + 1)
- 
+
             ' Gets Starting position of ASCII 13 in the new buffer
             Pos = InStr(Buffer, Chr(13))
- 
+
         End If
     Wend
- 
+
     If Not IsBlankString( Buffer ) Then
             Redim Preserve Lines(LineCount)
             Lines( LineCount ) = Buffer
             LineCount = LineCount + 1
     End If
- 
+
     If LineCount = 0 Then
         SplitMultiLineField = Empty
     Else
         SplitMultiLineField = Lines
     End If
 End Function
- 
- 
+
+
 '****************************************************************************
 '
 ' Loads the Dictionary Object containing the field mappings for the database table
@@ -1868,9 +1870,9 @@ Sub LoadFieldMappings()
             
        End With        
     End If
- 
+
 End Sub
- 
+
 '****************************************************************************
 ' Function LoadModelData()
 '
@@ -1890,14 +1892,14 @@ Function LoadModelDataEx(Man,Model)
     call alog( "Load Model Data " & Man & "   " & Model ) 
     
     SqlString = "SELECT "
- 
+
     Fields = FieldMappings.Keys
     FirstField = True
- 
+
     For i = 0 To FieldMappings.Count - 1
- 
+
         FieldName = Fields(i)
- 
+
         If FirstField Then    
             SqlString = SqlString & FieldName 
             FirstField = False
@@ -1905,17 +1907,17 @@ Function LoadModelDataEx(Man,Model)
             SqlString = SqlString & ", " & FieldName
         End If
     Next
- 
+
     SqlString = SqlString & " FROM Model_Data m, PdbAddrHeader a WHERE m.Model = '" & Model & "'" & _
                 " AND a.Name = '" & Man  & "'" & _
                 " AND m.Type = 1 And m.bIsDel = 0 And a.bIsDel = 0 And a.CompanyGuid = m.ManufacturerGuid"
     LogMsg( SqlString )
- 
+
     Call Application.QueryDatabase(Form.formId, SqlString, 0)
- 
+
     ' Set control values based on the db_ values
     VarList = FieldMappings.Items
- 
+
     For i = 0 To FieldMappings.Count -1 
         VarName = VarList(i)
         FieldName = Fields(i)
@@ -1925,38 +1927,38 @@ Function LoadModelDataEx(Man,Model)
         if IsNull(DbValue) then DbValue = Empty
         Call SetVar( VarName, DbValue )
     Next
- 
+
 End Function
- 
- 
+
+
 '****************************************************************************
 ' Sub ClearModelData()
 '
 '****************************************************************************
 Sub ClearModelData()
     Call LoadFieldMappings()
- 
+
     ' Clear the original model and manufacturer
     Call SetVar("modelpopup_originalmodel", Empty)
     Call SetVar("modelpopup_originalman", Empty)
- 
+
     ' Get all control names and clear them
     VarList = FieldMappings.Items
- 
+
     For i = 0 To FieldMappings.Count - 1 
         VarName = VarList(i)
         Call SetVar( VarName, Empty )
     Next
- 
+
     'restore manufacturer Guid.
     If Not IsBlankString( Form.modelpopup_BatMan ) Then
         Form.modelpopup_ManGuid = GetManGuid( Form.modelpopup_BatMan )
     End If
- 
- 
+
+
 End Sub
- 
- 
+
+
 '****************************************************************************
 ' Function SaveModelData()
 '
@@ -1966,25 +1968,25 @@ End Sub
 Function SaveModelData()
 call aLog("SaveModelData")
     Saved = False
- 
+
     OriginalModel = GetVar( "modelpopup_originalmodel" )
- 
+
     ' If there was no Original Model, Insert a new record. Otherwise do an update
     If IsBlankString( OriginalModel ) Then
- 
+
         Model = GetVar( "modelpopup_BatteryModel" )
         Man = GetVar( "modelpopup_BatMan" )
         ManGuid = GetVar( "modelpopup_ManGuid" )
- 
+
         If ModelExists( Model, ManGuid ) Then
- 
+
 	    Msg1 = Translate( "Model: " )
             Msg2 = Translate(  " already exists for the Manufacturer: " )
             Msg3 = Translate( "Update the existing model details?" )
- 
+
             Msg = Msg1 & Model & Msg2 & Man & Chr(13) & Chr(10) & Msg3
             Response = MsgBox( Msg, vbOkCancel + vbDefaultButton2 )
- 
+
             If Response = vbOK Then
                 Call SetVar( "modelpopup_originalman", Man )
                 Call SetVar( "modelpopup_originalmodel", Model )
@@ -1993,7 +1995,7 @@ call aLog("SaveModelData")
             ElseIf Response = vbCancel Then
                 Saved = False
             End If
- 
+
         Else
             Call InsertModelData()
             Saved = True
@@ -2003,37 +2005,37 @@ call aLog("SaveModelData")
         Call UpdateModelData()
         Saved = True
     End If
- 
+
     ErrorMsg = GetVar( "db_ErrorMsg" )
     If Not IsBlankString( ErrorMsg ) Then
         msgbox ErrorMsg    
         Saved = False
     End If
- 
+
     SaveModelData = Saved
- 
+
 End Function
- 
+
 '****************************************************************************
 ' Sub UpdateModelData
 '**************************************************************************** 
 Sub UpdateModelData()
     
     Call LoadFieldMappings()
- 
+
     CurrentTime = GetUTCTimeForSQL()
- 
+
     SqlString = "UPDATE Model_Data SET DateModified = " & CurrentTime
     
     Fields = FieldMappings.Keys
- 
- 
+
+
     For i = 0 To FieldMappings.Count - 1
- 
+
         FieldName = Fields(i)
         VarName = FieldMappings.Item( FieldName )
         VarValue = GetVarForSQL( VarName )
- 
+
         If Not IsEmpty( VarValue ) Then
             SqlString = SqlString & ", " & FieldName & " = " & VarValue
         End If
@@ -2046,44 +2048,44 @@ Sub UpdateModelData()
     If Not IsBlankString( OrigManGuid ) And OrigManGuid <> ManGuid Then
         ManGuid = OrigManGuid
     End If
- 
+
     SqlString = SqlString & " WHERE Model = '" & GetVar( "modelpopup_originalmodel" ) & "'" & _
                 " AND ManufacturerGuid = '" & EscQuotes(ManGuid) & "'" & _
                 " AND Type = 1 AND bIsDel = 0 "
     Application.ExecuteSQL( SqlString )
     LogMsg(SqlString)
 End Sub
- 
+
 '****************************************************************************
 ' Sub InsertModelData
 '**************************************************************************** 
 Sub InsertModelData()
     
     Call LoadFieldMappings()
- 
+
     SqlString = "Insert Into Model_Data ( "
- 
+
     ' make sure manufacturer guid is up to date
     Form.modelpopup_ManGuid = GetManGuid( Form.modelpopup_BatMan )
- 
+
     
     '
     ' Create Field List
     '
     Fields = FieldMappings.Keys
- 
+
     For i = 0 To FieldMappings.Count - 1
- 
+
         If Fields(i) <> "ModelGuid" Then
             VarName = FieldMappings.Item( Fields(i) )
             VarValue = GetVarForSQL( VarName )
- 
+
             If Not IsEmpty( VarValue ) Then
                 SqlString = SqlString & Fields(i) & ", "
             End If
         End If
     Next
- 
+
     SqlString = SqlString & " ModelGuid, DateCreated, DateSynch, DateModified, Type, bIsDel, SerialNo, RegionGuid ) Values ( "
     
     '
@@ -2094,23 +2096,23 @@ Sub InsertModelData()
         If FieldName <> "ModelGuid" Then
             VarName = FieldMappings.Item( FieldName )
             VarValue = GetVarForSQL( VarName )
- 
+
             If Not IsEmpty( VarValue ) Then
                 SqlString = SqlString & VarValue & ", "
             End If
         End If
     Next
- 
+
     CurrentTime = GetUTCTimeForSQL()
     Guid = Application.MakeGuid()
     SqlString = SqlString & "'" & EscQuotes( Guid ) & "', " & CurrentTime & ", " & CurrentTime & ", " & CurrentTime & ", "
- 
+
     SqlString = SqlString & "1, 0, 'model', 'REGION_CRS_____' ) "
- 
+
     Application.ExecuteSQL( SqlString )
     LogMsg(SqlString)
 End Sub
- 
+
 '****************************************************************************
 ' Sub DeleteModel
 '**************************************************************************** 
@@ -2131,7 +2133,7 @@ Sub DeleteModel()
     LogMsg(SqlString)
     
 End Sub
- 
+
 '****************************************************************************
 ' Sub ClearReturnValues
 '**************************************************************************** 
@@ -2139,7 +2141,7 @@ Sub ClearReturnVars
     Call SetVar( "modelpopup_ModelVarName", Empty )
     Call SetVar( "modelpopup_ManVarName", Empty )    
 End Sub
- 
+
 '****************************************************************************
 ' Sub SetReturnValues
 '**************************************************************************** 
@@ -2149,15 +2151,15 @@ Sub SetReturnValues
         Model = GetVar("modelpopup_BatteryModel")
         Call SetVar( ModelVarName, Model )
     End If
- 
+
     ManVarName = GetVar("modelpopup_ManVarName")    
     If Not IsBlankString( ManVarName ) Then
         Man = GetVar("modelpopup_BatMan")
         Call SetVar( ManVarName, Man )
     End If
 End Sub
- 
- 
+
+
 '****************************************************************************
 ' Function ModelExists
 '
@@ -2173,14 +2175,14 @@ Function ModelExists( ModelName, ManGuid )
     Call SetVar( "db_Model", Empty)
     ModelExists = Not IsBlankString( Model )
 End Function
- 
+
 '
 ' ****************************************
 ' LoadPrefsList()
 ' Load an array of all of the preference variables
 ' ****************************************
 '
- 
+
 sub LoadPrefsList( byref Prefs() )
     
     Ndx = 0
@@ -2193,18 +2195,18 @@ sub LoadPrefsList( byref Prefs() )
     Ndx = Ndx + 1 : Prefs(Ndx) ="ShowLimitsCh_11"    
     Ndx = Ndx + 1 : Prefs(Ndx) ="ShowLimitsCh_12" 
     Ndx = Ndx + 1 : Prefs(Ndx) ="ShowLimitsCh_13" 
- 
+
     for i = 1 to 13 
         Ndx = Ndx + 1 : Prefs(Ndx) ="ShowCh_" & i 
         Ndx = Ndx + 1 : Prefs(Ndx) ="ShowSym_" & i 
         Ndx = Ndx + 1 : Prefs(Ndx) ="DispAsBarChart_" & i 
     next
- 
+
     Ndx = Ndx + 1 : Prefs(Ndx) ="ShowDiagram"
     Ndx = Ndx + 1 : Prefs(Ndx) ="ClipNZigma"
     Ndx = Ndx + 1 : Prefs(Ndx) ="ClipNZigmaValue"
 end sub 
- 
+
 '
 ' ********************************************
 ' SaveBatPrefs()
@@ -2215,7 +2217,7 @@ Sub SaveBatPrefs()
     dim Prefs(100)
     call LoadPrefsList(Prefs )
     
- 
+
     for Ndx = 1 to 100     
         Var = Prefs(Ndx)
         
@@ -2234,9 +2236,9 @@ end sub
 Sub LoadBatPrefs()
         
     dim Prefs(100)
- 
+
     call LoadPrefsList(Prefs )
- 
+
     for Ndx = 1 to 100     
         Var = Prefs(Ndx)
         
@@ -2248,7 +2250,7 @@ Sub LoadBatPrefs()
         
     next
 end sub 
- 
+
 '
 ' ********************************************
 ' CalculateAverage()
@@ -2269,3 +2271,5 @@ Function CalculateAverage(TagName, NumTags)
     
     CalculateAverage = Avg
 End Function
+
+
